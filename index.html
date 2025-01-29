@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Светофор</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+            flex-direction: column;
+        }
+        .traffic-light {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: black;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .light {
+            width: 80px;
+            height: 80px;
+            background-color: gray;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="traffic-light">
+        <div class="light" id="red"></div>
+        <div class="light" id="yellow"></div>
+        <div class="light" id="green"></div>
+    </div>
+
+    <canvas id="confetti"></canvas>
+
+    <script>
+        const lights = {
+            red: false,
+            yellow: false,
+            green: false
+        };
+
+        document.querySelectorAll('.light').forEach(light => {
+            light.addEventListener('click', function() {
+                if (this.id === 'red') {
+                    this.style.backgroundColor = 'red';
+                    lights.red = true;
+                } else if (this.id === 'yellow') {
+                    this.style.backgroundColor = 'yellow';
+                    lights.yellow = true;
+                } else if (this.id === 'green') {
+                    this.style.backgroundColor = 'green';
+                    lights.green = true;
+                }
+                
+                if (lights.red && lights.yellow && lights.green) {
+                    startConfetti();
+                }
+            });
+        });
+
+        // Конфетти
+        const canvas = document.getElementById("confetti");
+        const ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particles = [];
+
+        function createParticle() {
+            return {
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height - canvas.height,
+                size: Math.random() * 10 + 5,
+                speed: Math.random() * 3 + 1,
+                color: hsl(${Math.random() * 360}, 100%, 50%)
+            };
+        }
+
+        function startConfetti() {
+            particles = Array.from({ length: 300 }, createParticle);
+            animateConfetti();
+        }
+
+        function animateConfetti() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(particle => {
+                ctx.fillStyle = particle.color;
+                ctx.beginPath();
+                ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                ctx.fill();
+                particle.y += particle.speed;
+                if (particle.y > canvas.height) {
+                    particle.y = 0;
+                }
+            });
+            requestAnimationFrame(animateConfetti);
+        }
+    </script>
+
+</body>
+</html>
