@@ -28,6 +28,10 @@
             border-radius: 50%;
             cursor: pointer;
             transition: background-color 0.3s;
+            pointer-events: none; /* Отключаем клики по умолчанию */
+        }
+        .light.active {
+            pointer-events: auto; /* Включаем клик для активного круга */
         }
         canvas {
             position: absolute;
@@ -40,7 +44,7 @@
 <body>
 
     <div class="traffic-light">
-        <div class="light" id="red"></div>
+        <div class="light active" id="red"></div> <!-- Первый активный -->
         <div class="light" id="yellow"></div>
         <div class="light" id="green"></div>
     </div>
@@ -48,27 +52,24 @@
     <canvas id="confetti"></canvas>
 
     <script>
-        const lights = {
-            red: false,
-            yellow: false,
-            green: false
-        };
+        const lightOrder = ["red", "yellow", "green"];
+        let currentLight = 0;
 
         document.querySelectorAll('.light').forEach(light => {
             light.addEventListener('click', function() {
-                if (this.id === 'red') {
-                    this.style.backgroundColor = 'red';
-                    lights.red = true;
-                } else if (this.id === 'yellow') {
-                    this.style.backgroundColor = 'yellow';
-                    lights.yellow = true;
-                } else if (this.id === 'green') {
-                    this.style.backgroundColor = 'green';
-                    lights.green = true;
-                }
-                
-                if (lights.red && lights.yellow && lights.green) {
-                    startConfetti();
+                if (this.id === lightOrder[currentLight]) {
+                    if (this.id === 'red') this.style.backgroundColor = 'red';
+                    if (this.id === 'yellow') this.style.backgroundColor = 'yellow';
+                    if (this.id === 'green') this.style.backgroundColor = 'green';
+
+                    this.classList.remove('active'); // Выключаем кликабельность
+                    currentLight++; // Переход к следующему свету
+
+                    if (currentLight < lightOrder.length) {
+                        document.getElementById(lightOrder[currentLight]).classList.add('active'); // Активируем следующий
+                    } else {
+                        startConfetti(); // Если все загорелись — запускаем конфетти
+                    }
                 }
             });
         });
